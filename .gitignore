@@ -1,0 +1,91 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+ENV/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+coverage.xml
+dist/
+build/
+*.egg
+
+# Node / pnpm
+node_modules/
+.pnpm-store/
+pnpm-debug.log*
+*.tsbuildinfo
+.turbo/
+
+# npm pack output — produced ephemerally by the release workflow.
+# Never commit these; if one slips into the repo, the release workflow's
+# `mv feedback-widget-*.tgz` glob matches two files and fails.
+*.tgz
+
+# Build artefacts — dist is gitignored EXCEPT for the published package
+# (consumers install from git URL and need the prebuilt artefact).
+dist/
+!packages/feedback-frontend/dist/
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.envrc
+.direnv/
+
+# Local env files
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Build / SDK artefacts. (Note: src/client/ types are hand-maintained
+# for now — were originally meant to be openapi-ts regenerated.)
+
+# Sandbox runtime
+apps/sandbox-host/**/data/
+apps/sandbox-host/**/.minio-data/
+
+# Evidence / artefacts of e2e runs
+docs/evidence/*.gif
+docs/evidence/*.mp4
+docs/evidence/*.webm
+docs/evidence/screenshots/
+
+# Playwright
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Logs
+*.log
+logs/
+
+# Per-machine Claude harness overrides (never committed)
+# See .claude/rules/output-tone-policy.md
+.claude/output-mode.local
+
+# Codi runtime state — per-machine, never committed
+# brain.db, session locks, feedback queue, auto-backups
+.codi/state/
+.codi/.session/
+.codi/feedback/
+.codi/backups/
+
+# Per-developer Claude permissions
+.claude/settings.local.json
+.claude/scheduled_tasks.lock

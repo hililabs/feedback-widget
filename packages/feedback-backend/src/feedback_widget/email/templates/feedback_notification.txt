@@ -1,0 +1,32 @@
+{% extends "base.txt" %}
+{% block body %}
+[{{ type_label }}] {{ feedback.title }}
+
+Submitter: {{ submitter_email }}
+Tenant:    {{ feedback.tenant_id }}
+Type:      {{ feedback.type.value }}
+Status:    {{ feedback.status.value }}
+URL:       {{ feedback.url_captured }}
+{% if feedback.route_name %}Route:     {{ feedback.route_name }}
+{% endif %}{% if feedback.app_version %}Version:   {{ feedback.app_version }}{% if feedback.git_commit_sha %} ({{ feedback.git_commit_sha[:8] }}){% endif %}
+{% endif %}Captured:  {{ feedback.created_at }}
+
+--- What's happening? ---
+{{ feedback.description }}
+
+{% if feedback.expected_outcome %}--- How should it work? ---
+{{ feedback.expected_outcome }}
+
+{% endif %}{% if feedback.element_selector %}--- Selected element ---
+{{ feedback.element_selector }}
+
+{% endif %}{% if presigned_url %}--- Screenshot ---
+{{ presigned_url }}
+
+{% endif %}{% if extra_attachment_count and extra_attachment_count > 0 %}{{ extra_attachment_count }} additional file{% if extra_attachment_count != 1 %}s{% endif %} attached — available in the bundle ZIP.
+
+{% endif %}{% if deep_link %}Open in {{ brand_name }} admin: {{ deep_link }}
+
+{% endif %}--- Technical metadata (redacted) ---
+{{ metadata_pretty }}
+{% endblock %}

@@ -1,0 +1,66 @@
+name: frontend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "packages/feedback-frontend/**"
+      - "apps/sandbox-host/frontend/**"
+      - ".github/workflows/frontend.yml"
+      - "pnpm-workspace.yaml"
+      - "package.json"
+  pull_request:
+    paths:
+      - "packages/feedback-frontend/**"
+      - "apps/sandbox-host/frontend/**"
+      - ".github/workflows/frontend.yml"
+      - "pnpm-workspace.yaml"
+      - "package.json"
+
+concurrency:
+  group: frontend-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-typecheck-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - run: pnpm install --no-frozen-lockfile
+
+      - name: Lint
+        run: pnpm -r lint
+
+      - name: Typecheck
+        run: pnpm -r typecheck
+
+      - name: Test (vitest)
+        run: pnpm --filter @hililabs/feedback-widget test
+
+      - name: Build
+        run: pnpm --filter @hililabs/feedback-widget build
+
+      - name: Verify zero cross-boundary imports
+        run: |
+          if grep -rn 'from "@/' packages/feedback-frontend/src/ ; then
+            echo "::error::cross-boundary @/* import found inside the widget"
+            exit 1
+          fi
+
+      - name: Verify dist size budget (<= 300KB minified)
+        run: |
+          set -e
+          size=$(find packages/feedback-frontend/dist -name "*.js" -not -name "*.map" -exec cat {} + | wc -c)
+          echo "dist js bytes: $size"
+          if [ "$size" -gt 307200 ]; then
+            echo "::error::dist js exceeds 300KB budget ($size bytes)"
+            exit 1
+          fi

@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+/* Tailwind v4 needs explicit @source directives for files outside its
+ * default scan tree. We point it at:
+ *   1. the sandbox's own pages (App.tsx) — relative to this file
+ *   2. the linked widget package source — for the chrome utilities
+ *   3. the published dist (when running against a published widget) */
+@source "../**/*.{ts,tsx}";
+@source "../../../../packages/feedback-frontend/src/**/*.{ts,tsx}";
+@source "../../../node_modules/@hililabs/feedback-widget/dist/**/*.{js,mjs}";
+
+/* shadcn CSS variables — required for the @hililabs/feedback-widget vendored primitives. */
+/* Sandbox runs in dark mode by default — the index.html applies the
+ * ``class="dark"`` to <html> so the widget's vendored shadcn dark
+ * token set kicks in. We don't redefine :root tokens here because the
+ * widget tailwind preset already ships both light + dark sets and our
+ * own :root would lose the cascade against the widget's :root.
+ *
+ * The body color/background fallback below keeps unhydrated content
+ * (initial paint before React mounts) on the same dark surface so
+ * users never see a white flash. */
+html,
+body {
+  background: hsl(222.2 84% 4.9%);
+  color: hsl(210 40% 98%);
+}
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+}

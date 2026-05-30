@@ -1,0 +1,96 @@
+name: backend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "packages/feedback-backend/**"
+      - "apps/sandbox-host/backend/**"
+      - ".github/workflows/backend.yml"
+      - "pyproject.toml"
+  pull_request:
+    paths:
+      - "packages/feedback-backend/**"
+      - "apps/sandbox-host/backend/**"
+      - ".github/workflows/backend.yml"
+      - "pyproject.toml"
+
+concurrency:
+  group: backend-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-typecheck-test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: feedback
+          POSTGRES_PASSWORD: feedback
+          POSTGRES_DB: feedback_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Install Python
+        run: uv python install 3.12
+
+      - name: Sync dependencies
+        # --all-extras ensures optional LLM SDKs (openai, google-genai,
+        # anthropic) are installed so mypy --strict can resolve their
+        # imports. Without them every LLM provider file reports
+        # "Cannot find implementation or library stub".
+        run: uv sync --all-packages --all-extras --group dev
+
+      - name: Lint
+        run: |
+          uv run ruff check packages/feedback-backend/src packages/feedback-backend/tests
+          uv run ruff format --check packages/feedback-backend/src packages/feedback-backend/tests
+
+      - name: Typecheck
+        run: uv run mypy packages/feedback-backend/src --strict
+
+      - name: Security scan (bandit)
+        run: |
+          uv tool run bandit -r packages/feedback-backend/src \
+            --skip B104,B311 \
+            -ll
+
+      - name: Test (unit)
+        env:
+          FEEDBACK_DATABASE_URL: postgresql+psycopg://feedback:feedback@localhost:5432/feedback_test
+        run: |
+          uv run pytest packages/feedback-backend/tests/unit \
+            --cov=feedback_widget \
+            --cov-report=term-missing \
+            --cov-report=xml
+
+      - name: Test (integration)
+        env:
+          FEEDBACK_DATABASE_URL: postgresql+psycopg://feedback:feedback@localhost:5432/feedback_test
+        run: |
+          uv run pytest packages/feedback-backend/tests/integration \
+            --cov=feedback_widget \
+            --cov-append \
+            --cov-report=term-missing \
+            --cov-report=xml
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-backend
+          path: coverage.xml
+          retention-days: 14

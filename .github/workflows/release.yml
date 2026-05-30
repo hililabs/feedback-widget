@@ -1,0 +1,42 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build frontend package
+        run: pnpm --filter @hililabs/feedback-widget build
+
+      - name: Pack frontend tarball
+        id: pack
+        run: |
+          cd packages/feedback-frontend
+          rm -f feedback-widget-*.tgz
+          npm pack
+          mv feedback-widget-*.tgz ../../feedback-widget.tgz
+          echo "tarball=$PWD/../../feedback-widget.tgz" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            feedback-widget.tgz

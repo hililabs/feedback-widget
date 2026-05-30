@@ -1,0 +1,247 @@
+"""Feature-scoped Pydantic settings for the feedback widget.
+
+All env vars use the ``FEEDBACK_`` prefix. The host application provides a
+fully-populated :class:`FeedbackSettings` instance to
+:func:`register_feedback_router` (or relies on env-driven instantiation).
+
+Hosts running multi-tenant Postgres-RLS deployments set
+``FEEDBACK_MULTI_TENANT_MODE=true``; single-tenant hosts (e.g. sapphira)
+leave it false and the widget skips the ``WHERE tenant_id = …`` defence
+layer.
+
+The ``ITER_*`` block configures the LLM provider used by the chat-first
+capture flow. The legacy iter-module router was removed in Sprint C;
+the env-var names are kept (``FEEDBACK_ITER_PROVIDER``,
+``FEEDBACK_ITER_*_MODEL``, ``FEEDBACK_ITER_*_API_KEY``,
+``FEEDBACK_ITER_GLOSSARY``, ``FEEDBACK_ITER_FORBIDDEN_WORDS``) to avoid
+breaking host ``.env`` files in production. A future major version may
+rename them to ``FEEDBACK_LLM_*``.
+"""
+
+from __future__ import annotations
+
+from functools import lru_cache
+from typing import Literal
+
+from pydantic import SecretStr, computed_field
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class FeedbackSettings(BaseSettings):
+    """Configuration for the feedback widget — all sourced from ``FEEDBACK_*`` env vars."""
+
+    model_config = SettingsConfigDict(
+        env_prefix="FEEDBACK_",
+        env_file=None,  # the host owns its .env discovery
+        case_sensitive=True,
+        extra="ignore",
+    )
+
+    # ────────────────────────────────────────────────────────────────
+    # Master switch
+    # ────────────────────────────────────────────────────────────────
+
+    ENABLED: bool = True
+
+    # ────────────────────────────────────────────────────────────────
+    # Database
+    # ────────────────────────────────────────────────────────────────
+
+    # Sync URL (psycopg / postgresql://...). See ADR-006.
+    DATABASE_URL: str = ""
+
+    # ────────────────────────────────────────────────────────────────
+    # Object storage (S3-compatible — MinIO in dev)
+    # ────────────────────────────────────────────────────────────────
+
+    BUCKET: str = "feedback"
+    S3_ENDPOINT_URL: str = "http://localhost:9000"
+    S3_PUBLIC_ENDPOINT_URL: str = ""  # falls back to S3_ENDPOINT_URL for presigned URLs
+    S3_ACCESS_KEY: str = "feedback"
+    S3_SECRET_KEY: str = "feedback-dev-key"
+    S3_REGION: str = "us-east-1"
+    PRESIGNED_TTL_SECONDS: int = 604_800  # 7 days
+
+    # ────────────────────────────────────────────────────────────────
+    # Email (SMTP relay; MailHog in dev)
+    # ────────────────────────────────────────────────────────────────
+
+    SMTP_HOST: str = "localhost"
+    SMTP_PORT: int = 1025
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
+    SMTP_TLS: bool = False
+    SMTP_SSL: bool = False
+    EMAILS_FROM_EMAIL: str = "feedback@example.com"
+    EMAILS_FROM_NAME: str = "Feedback Widget"
+
+    # CSV: who gets the "new feedback" email.
+    NOTIFY_EMAILS: str = ""
+
+    # ────────────────────────────────────────────────────────────────
+    # Limits & branding
+    # ────────────────────────────────────────────────────────────────
+
+    RATE_LIMIT_PER_HOUR: int = 20
+    MAX_SCREENSHOT_BYTES: int = 10_000_000
+    BRAND_NAME: str = "Feedback"
+    ADMIN_DEEP_LINK_BASE: str = ""
+    # URL of the host's source-code repo, surfaced in the LLM-handoff ZIP
+    # README so a coding LLM knows where to apply patches. Empty ⇒ omitted.
+    REPO_URL: str = ""
+
+    # ────────────────────────────────────────────────────────────────
+    # Security toggles (per ADR-006 + sapphira hallazgos)
+    # ────────────────────────────────────────────────────────────────
+
+    # When false, the router does not enforce CSRF double-submit on
+    # mutating endpoints. Use false for Bearer-token-only hosts (sapphira).
+    CSRF_REQUIRED: bool = True
+
+    # When true, every service query also adds a `WHERE tenant_id = :tid`
+    # filter on top of RLS. Required for multi-tenant hosts; off for
+    # single-tenant hosts where `tenant_id` is always NULL.
+    MULTI_TENANT_MODE: bool = True
+
+    # ────────────────────────────────────────────────────────────────
+    # LLM provider configuration (Sprint C: shared by chat-first capture)
+    #
+    # The env-var prefix is retained as ``ITER_*`` to preserve hosts'
+    # existing ``.env`` files. A future major version may migrate to
+    # ``FEEDBACK_LLM_*``.
+    # ────────────────────────────────────────────────────────────────
+
+    ITER_PROVIDER: Literal["gemini", "claude", "openai", "fake"] = "gemini"
+
+    # Model identifiers — empty strings force the host to set them
+    # explicitly via env, so we never silently fall back to a stale
+    # default that quietly drifts from what the host expected.
+    ITER_GEMINI_MODEL: str = ""
+    # Comma-separated fallback chain. Tried in order on
+    # rate-limit or transient-server errors. Empty string = no
+    # fallbacks. Models inherit the primary model's API key.
+    ITER_GEMINI_MODELS_FALLBACK: str = ""
+    ITER_CLAUDE_MODEL: str = ""
+    ITER_OPENAI_MODEL: str = ""
+
+    # API keys — SecretStr so they don't leak into __repr__ / logs.
+    ITER_GEMINI_API_KEY: SecretStr | None = None
+    ITER_ANTHROPIC_API_KEY: SecretStr | None = None
+    ITER_OPENAI_API_KEY: SecretStr | None = None
+
+    # Reasoning budget for providers that expose one (Gemini "thinking",
+    # Anthropic "extended thinking", OpenAI reasoning effort).
+    ITER_THINKING_MODE: Literal["off", "low", "medium", "high"] = "medium"
+
+    # Comma-separated forbidden words the scrubber matches against the
+    # assistant reply text in capture mode. Default = a wide list
+    # covering anything a non-technical user wouldn't recognise; hosts
+    # can shrink it via env if they need to allow some terms (rare).
+    ITER_FORBIDDEN_WORDS: str = (
+        # Networking / API
+        "endpoint,api,async,asynchronous,synchronous,backend,frontend,"
+        "middleware,webhook,callback,listener,observer,subscriber,"
+        "dispatcher,websocket,polling,streaming,sse,grpc,http,rest,"
+        "patch,post,put,get,delete request,head request,options request,"
+        # Caching / perf
+        "cache,debounce,throttle,ttl,latency,throughput,bandwidth,"
+        "payload,payload size,gzip,encoding,parsing,serialization,"
+        "deserialization,"
+        # Auth / security
+        "jwt,oauth,csrf,xss,sql injection,salt,signature,certificate,"
+        "encryption,decryption,hash,token bucket,rate limit,"
+        # Storage / data
+        "json,yaml,toml,ini,schema,database,migration,index,join,"
+        "foreign key,fk,sql,query,transaction,deadlock,orm,dao,"
+        "repository,store,reducer,mutation,action,"
+        # Concurrency / runtime
+        "race condition,mutex,queue,thread,promise,future,coroutine,"
+        "event loop,kernel,syscall,"
+        # Frontend / UI internals
+        "dom,css,html,query selector,data attribute,lifecycle,mounting,"
+        "unmounting,hydration,ssr,csr,prop,hook,ref,state,context,"
+        "provider,consumer,controller,service,"
+        # Build / deploy
+        "dependency,package,library,module,config file,env var,"
+        "environment variable,build,bundle,deploy,ci,cd,pipeline,"
+        "runner,container,image"
+    )
+
+    # Product glossary — comma-separated ``term:definition`` pairs used
+    # by the chat-first capture prompt (Sprint B / capture_v3). The host
+    # injects its own domain vocabulary so the LLM stays inside the
+    # customer's language ("KYC", "AML", "OFAC", "MIFID", "ESEF", etc.).
+    # Example::
+    #
+    #     FEEDBACK_ITER_GLOSSARY="KYC:know-your-customer,AML:anti-money-laundering"
+    #
+    # Empty string ⇒ the prompt renders "(no glossary supplied)" so
+    # admin tooling can still hash the system prompt deterministically.
+    ITER_GLOSSARY: str = ""
+
+    # ────────────────────────────────────────────────────────────────
+    # Derived / computed
+    # ────────────────────────────────────────────────────────────────
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def notify_emails_list(self) -> list[str]:
+        """Parse ``NOTIFY_EMAILS`` (CSV) into a list of stripped addresses."""
+        return [e.strip() for e in self.NOTIFY_EMAILS.split(",") if e.strip()]
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def s3_public_endpoint(self) -> str:
+        """Endpoint used when generating presigned URLs (browser-reachable)."""
+        return self.S3_PUBLIC_ENDPOINT_URL or self.S3_ENDPOINT_URL
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def forbidden_words_list(self) -> list[str]:
+        """Parse ``ITER_FORBIDDEN_WORDS`` (CSV) into a lowercased list.
+
+        The scrubber lowercases incoming text before matching, so
+        normalising once at parse time avoids per-call work.
+        """
+        return [w.strip().lower() for w in self.ITER_FORBIDDEN_WORDS.split(",") if w.strip()]
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def glossary_dict(self) -> dict[str, str]:
+        """Parse ``ITER_GLOSSARY`` (``term:definition,...``) into a dict.
+
+        Shared by the iter-module and the chat-first capture prompt
+        (Sprint B / capture_v3). Empty / malformed entries are dropped
+        silently so a typo in env does not crash the request path —
+        the LLM simply sees a smaller glossary.
+        """
+        out: dict[str, str] = {}
+        for pair in self.ITER_GLOSSARY.split(","):
+            if ":" not in pair:
+                continue
+            key, _, value = pair.partition(":")
+            key = key.strip()
+            value = value.strip()
+            if key and value:
+                out[key] = value
+        return out
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def emails_enabled(self) -> bool:
+        """True only if SMTP_HOST and EMAILS_FROM_EMAIL are set.
+
+        When False, :func:`feedback_widget.email.send_email` no-ops and logs
+        a warning instead of raising. This keeps tests + local dev green
+        without an SMTP relay.
+        """
+        return bool(self.SMTP_HOST) and bool(self.EMAILS_FROM_EMAIL)
+
+
+@lru_cache(maxsize=1)
+def get_settings() -> FeedbackSettings:
+    """Cached factory.
+
+    Tests that need a fresh instance call ``get_settings.cache_clear()``.
+    """
+    return FeedbackSettings()

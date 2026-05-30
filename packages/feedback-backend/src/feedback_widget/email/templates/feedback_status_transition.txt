@@ -1,0 +1,12 @@
+{% extends "base.txt" %}
+{% block body %}
+{{ ticket_code }} · status updated
+
+Your feedback "{{ feedback.title }}" has moved to {{ status_label }}.
+
+{% if triage_note %}--- Note from the team ---
+{{ triage_note }}
+
+{% endif %}{% if deep_link %}Open the ticket in {{ brand_name }}: {{ deep_link }}
+{% endif %}
+{% endblock %}
