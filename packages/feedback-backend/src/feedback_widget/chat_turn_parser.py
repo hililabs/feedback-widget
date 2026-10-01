@@ -150,7 +150,7 @@ def parse_turn_response(raw: str) -> dict[str, Any]:
         errors.append("'synthesis' must be an object when mode='synthesize'")
 
     # Sprint C — structured validation of the synthesis payload via the
-    # ``ChatSynthesis`` Pydantic model (paridad legacy iter). When the
+    # ``ChatSynthesis`` Pydantic model (parity with legacy iter). When the
     # model emits a shape we cannot coerce, surface as a parse error so
     # the repair loop can re-prompt. Importing locally avoids a circular
     # import (chat_schemas → models → exceptions).

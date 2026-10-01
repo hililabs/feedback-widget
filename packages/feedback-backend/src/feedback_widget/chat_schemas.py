@@ -108,7 +108,7 @@ class ChatSessionDetailResponse(BaseModel):
 
 
 class ChatSynthesisPersona(BaseModel):
-    """One persona entry inside an enriched synthesis (Sprint C, paridad
+    """One persona entry inside an enriched synthesis (Sprint C, parity with
     legacy iter Persona). Typed so the frontend SynthesisCard can render
     deterministically and admin tooling can filter / query."""
 
@@ -144,7 +144,7 @@ class ChatSynthesis(BaseModel):
     acceptance_criteria: list[str] = Field(default_factory=list, max_length=20)
     open_questions: list[str] = Field(default_factory=list, max_length=20)
 
-    # ── Optional enrichment (capture_v3 / Sprint B paridad legacy iter) ─
+    # ── Optional enrichment (capture_v3 / Sprint B parity with legacy iter) ─
     personas: list[ChatSynthesisPersona] = Field(default_factory=list, max_length=5)
     user_stories: list[str] = Field(default_factory=list, max_length=10)
     assumptions: list[str] = Field(default_factory=list, max_length=15)
@@ -172,8 +172,8 @@ class ConfirmChatSessionRequest(BaseModel):
 
     ``screenshot_b64`` carries the auto-captured page screenshot as base64
     PNG so the backend can upload it to the feedback bucket and create
-    the matching :class:`FeedbackAttachment` row — paridad con el endpoint
-    legacy multipart. ``None`` when capture failed client-side; the
+    the matching :class:`FeedbackAttachment` row — parity with the legacy
+    multipart endpoint. ``None`` when capture failed client-side; the
     confirm still succeeds but without the visual evidence.
     """
 

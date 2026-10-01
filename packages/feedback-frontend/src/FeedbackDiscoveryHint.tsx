@@ -1,7 +1,7 @@
 /**
  * Optional discovery card hosts can mount in their admin home / docs
  * page to teach users where the in-app feedback UX lives. Mirrors the
- * Patrón A model: triage lives inside the FeedbackButton sheet, no
+ * Pattern A model: triage lives inside the FeedbackButton sheet, no
  * dedicated route exists.
  *
  * Hosts opt in:

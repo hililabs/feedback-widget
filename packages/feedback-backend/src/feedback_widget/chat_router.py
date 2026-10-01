@@ -628,10 +628,10 @@ def build_chat_router(
             ticket_code,
         )
 
-        # Email notification (paridad con legacy POST /feedback). If
+        # Email notification (parity with legacy POST /feedback). If
         # Phase 5 produced a screenshot attachment, re-read its bytes
         # from storage and pass them inline so the admin email renders
-        # the visual evidence — paridad final con la solución original.
+        # the visual evidence — final parity with the original solution.
         # No-op when FEEDBACK_NOTIFY_EMAILS is empty (early return
         # inside the helper). Failures here must NEVER block confirm.
         try:

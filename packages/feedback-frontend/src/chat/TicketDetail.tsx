@@ -586,9 +586,9 @@ export function TicketDetail({ feedbackId, onBack }: TicketDetailProps): ReactEl
                  visually identical to the new-feedback tab. */}
 
           {/* ── Owner reply composer — SAME pill as new-feedback ──
-                 incluyendo paperclip + mic + send con misma morfología
-                 brand. Voice flow propio (useVoiceFlow) porque
-                 TicketDetail vive fuera de useFeedbackChat. */}
+                 including paperclip + mic + send with the same brand
+                 shape. Its own voice flow (useVoiceFlow) because
+                 TicketDetail lives outside useFeedbackChat. */}
           {isOwner && !isTerminal ? (
             voice.state === "recording" || voice.state === "transcribing" ? (
               <VoiceRecorder

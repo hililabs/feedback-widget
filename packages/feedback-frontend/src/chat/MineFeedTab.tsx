@@ -1,5 +1,5 @@
 /**
- * "Tickets" tab — unified ticket browser (Patrón A, 2026-05-16).
+ * "Tickets" tab — unified ticket browser (Pattern A, 2026-05-16).
  *
  * Owns the management surface for both audiences:
  *

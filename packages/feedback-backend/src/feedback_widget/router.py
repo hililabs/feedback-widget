@@ -273,7 +273,7 @@ def build_router(
     # GET /{id} — detail (owner OR MASTER_ADMIN)
     # ────────────────────────────────────────────────────────────────
     #
-    # Patrón A unification (2026-05-16): the TicketDetail view inside
+    # Pattern A unification (2026-05-16): the TicketDetail view inside
     # the sheet renders for both audiences, so the detail endpoint
     # must accept the owner too. Admins see any ticket; users only
     # their own. 404 (not 403) on cross-user access avoids leaking

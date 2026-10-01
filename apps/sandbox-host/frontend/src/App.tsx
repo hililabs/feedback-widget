@@ -3,7 +3,7 @@ import { useState } from "react";
 
 import { type SandboxRole, getSandboxRole, sandboxBindings, setSandboxRole } from "./bindings";
 
-// Patrón A (2026-05-16) — the dedicated admin triage route is gone.
+// Pattern A (2026-05-16) — the dedicated admin triage route is gone.
 // Admins access the same UX as users via the floating launcher; the
 // scope chip "Mine / All" inside the sheet flips the ticket list
 // between own and tenant-wide.
