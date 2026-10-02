@@ -1,4 +1,4 @@
-"""Integration tests for chat-first confirm paridad with legacy POST.
+"""Integration tests for chat-first confirm parity with legacy POST.
 
 Each phase of the Sprint A spec (docs/specs/20260514_1500_SPEC_chat-first-
 parity-with-legacy.md) lands one test here so the parity invariants stay
@@ -387,7 +387,7 @@ def test_confirm_attaches_screenshot_inline_to_notification_email(
     client, engine, settings, fake_storage, monkeypatch
 ) -> None:
     """Phase 6 — when both screenshot AND notify emails are configured,
-    the SMTP send carries the screenshot bytes inline (paridad legacy)."""
+    the SMTP send carries the screenshot bytes inline (parity with legacy)."""
     import base64
 
     png_bytes = base64.b64decode(
