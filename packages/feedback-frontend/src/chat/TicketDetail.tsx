@@ -447,7 +447,7 @@ export function TicketDetail({ feedbackId, onBack }: TicketDetailProps): ReactEl
               timeline). Mirrors FeedbackChatSheet body — composer +
               tray sit FLUSH below this. */}
           <div className="flex flex-col gap-2 px-2 pt-2 pb-2 flex-1 min-h-0 overflow-y-auto">
-          {/* ── Admin actions panel — ARRIBA, justo bajo el header ─ */}
+          {/* ── Admin actions panel — at the TOP, right below the header ─ */}
           {isAdmin ? (
             <details
               className="rounded-md bg-primary/10 p-2"

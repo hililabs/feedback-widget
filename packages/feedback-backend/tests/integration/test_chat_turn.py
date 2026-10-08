@@ -39,7 +39,7 @@ from sqlmodel import Session
 # ────────────────────────────────────────────────────────────────────
 
 
-def _discover_payload(reply: str = "Cuéntame qué pasó.") -> dict[str, Any]:
+def _discover_payload(reply: str = "Tell me what happened.") -> dict[str, Any]:
     """Canned discover-mode turn payload that satisfies the parser."""
     return {
         "mode": "discover",
@@ -64,7 +64,7 @@ def _synthesize_payload() -> dict[str, Any]:
     """Canned synthesize-mode turn payload."""
     return {
         "mode": "synthesize",
-        "reply": "Resumiendo lo que me contaste.",
+        "reply": "Summarizing what you told me.",
         "covered": {
             "problem": 1.0,
             "context": 1.0,
@@ -78,12 +78,12 @@ def _synthesize_payload() -> dict[str, Any]:
         "active_branch": "leaf",
         "inferred": {"type": "bug", "severity": "major"},
         "synthesis": {
-            "title": "Botón guardar no responde",
-            "summary": "El usuario no logra guardar.",
-            "user_story": "Como usuario quiero guardar mi trabajo.",
-            "context": "Pantalla de edición.",
-            "user_need": "Persistir cambios.",
-            "acceptance_criteria": ["El botón guarda el formulario."],
+            "title": "Save button does not respond",
+            "summary": "The user cannot save.",
+            "user_story": "As a user I want to save my work.",
+            "context": "Edit screen.",
+            "user_need": "Persist changes.",
+            "acceptance_criteria": ["The button saves the form."],
             "open_questions": [],
         },
     }
@@ -217,9 +217,9 @@ async def test_run_turn_capture_emits_discover_when_under_cap(
         svc.run_turn(
             session_db=db_session,
             chat_session_id=row.id,
-            user_content="No puedo guardar mi trabajo",
+            user_content="I can't save my work",
             provider=provider,
-            glossary={"trabajo": "documento"},
+            glossary={"work": "document"},
         )
     )
 
@@ -266,7 +266,7 @@ async def test_run_turn_forces_synthesize_at_turn_5(
         svc.run_turn(
             session_db=db_session,
             chat_session_id=row.id,
-            user_content="Ya está",
+            user_content="That's it",
             provider=provider,
         )
     )
@@ -285,7 +285,7 @@ async def test_run_turn_forces_synthesize_at_turn_5(
     assert persisted is not None
     assert persisted.status == ChatSessionStatus.AWAITING_CONFIRM
     assert persisted.synthesis_json is not None
-    assert persisted.synthesis_json["title"] == "Botón guardar no responde"
+    assert persisted.synthesis_json["title"] == "Save button does not respond"
 
 
 @pytest.mark.asyncio
@@ -300,7 +300,7 @@ async def test_run_turn_handles_malformed_json_with_repair(
         stream_responses=["this is not json at all"],
         generate_responses=[
             "still not json",  # first repair retry fails
-            json.dumps(_discover_payload(reply="Reintento OK")),
+            json.dumps(_discover_payload(reply="Retry OK")),
         ],
     )
 
@@ -309,7 +309,7 @@ async def test_run_turn_handles_malformed_json_with_repair(
         svc.run_turn(
             session_db=db_session,
             chat_session_id=row.id,
-            user_content="hola",
+            user_content="hello",
             provider=provider,
         )
     )
@@ -323,7 +323,7 @@ async def test_run_turn_handles_malformed_json_with_repair(
     assert "turn_done" in types
     assert "error" not in types
     turn_done = next(ev for ev in events if ev["type"] == "turn_done")
-    assert turn_done["turn"]["reply"] == "Reintento OK"
+    assert turn_done["turn"]["reply"] == "Retry OK"
 
 
 @pytest.mark.asyncio
@@ -334,7 +334,7 @@ async def test_run_turn_persists_message_and_scrubs_forbidden_words(
     glossary maps it, the persisted message text must carry the
     rewritten version, not the original."""
     row = _seed_open_session(db_session)
-    payload = _discover_payload(reply="Voy a abrir un ticket de cache para ti.")
+    payload = _discover_payload(reply="I'll open a cache ticket for you.")
     provider = _ScriptedLLMProvider(stream_responses=[json.dumps(payload)])
 
     svc = ChatService()
@@ -342,10 +342,10 @@ async def test_run_turn_persists_message_and_scrubs_forbidden_words(
         svc.run_turn(
             session_db=db_session,
             chat_session_id=row.id,
-            user_content="hola",
+            user_content="hello",
             provider=provider,
             forbidden_words=["ticket", "cache"],
-            glossary={"ticket": "incidencia", "cache": "memoria temporal"},
+            glossary={"ticket": "incident", "cache": "temporary memory"},
         )
     )
 
@@ -358,4 +358,4 @@ async def test_run_turn_persists_message_and_scrubs_forbidden_words(
     text = assistant_msg["text"].lower()
     assert "ticket" not in text
     assert "cache" not in text
-    assert "incidencia" in text or "memoria temporal" in text
+    assert "incident" in text or "temporary memory" in text

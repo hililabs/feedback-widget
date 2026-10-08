@@ -91,7 +91,7 @@ class FeedbackSettings(BaseSettings):
     REPO_URL: str = ""
 
     # ────────────────────────────────────────────────────────────────
-    # Security toggles (per ADR-006 + sapphira hallazgos)
+    # Security toggles (per ADR-006 + sapphira findings)
     # ────────────────────────────────────────────────────────────────
 
     # When false, the router does not enforce CSRF double-submit on

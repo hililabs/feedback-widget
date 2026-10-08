@@ -36,12 +36,12 @@ _ADMIN_USER_ID = uuid.UUID("22222222-2222-2222-2222-222222222222")
 def _canned_synthesis() -> dict[str, Any]:
     """A synthesis payload that mirrors the chat capture prompt output."""
     return {
-        "title": "Botón Guardar no responde en edición",
-        "summary": "El usuario reporta que el botón Guardar no responde.",
-        "user_story": "Como usuario quiero guardar mi trabajo sin recargar.",
-        "context": "Pantalla de edición de feedback.",
-        "user_need": "Persistir mis cambios sin perder contexto.",
-        "acceptance_criteria": ["El botón guarda el formulario."],
+        "title": "Save button does not respond while editing",
+        "summary": "The user reports that the Save button does not respond.",
+        "user_story": "As a user I want to save my work without reloading.",
+        "context": "Feedback edit screen.",
+        "user_need": "Persist my changes without losing context.",
+        "acceptance_criteria": ["The button saves the form."],
         "open_questions": [],
         "inferred": {"type": "bug", "severity": "major"},
     }
@@ -106,10 +106,10 @@ def test_confirm_creates_feedback_row_and_returns_ticket_code(client, engine) ->
         assert fb.user_id == _STAFF_USER_ID
         assert fb.type == FeedbackType.BUG
         assert fb.severity == FeedbackSeverity.MAJOR
-        assert fb.title == "Botón Guardar no responde en edición"
-        assert "El usuario reporta" in fb.description
-        assert "Como usuario quiero" in fb.description
-        assert fb.expected_outcome == "Persistir mis cambios sin perder contexto."
+        assert fb.title == "Save button does not respond while editing"
+        assert "The user reports" in fb.description
+        assert "As a user I want" in fb.description
+        assert fb.expected_outcome == "Persist my changes without losing context."
         assert fb.synthesis_json is not None
         assert fb.synthesis_json["title"] == _canned_synthesis()["title"]
         # Under the unified schema the chat session IS the ticket — same row, same id.
@@ -137,12 +137,12 @@ def test_confirm_uses_synthesis_override_when_provided(client, engine) -> None:
     )
 
     override = {
-        "title": "Título editado por el admin",
-        "summary": "Resumen editado.",
-        "user_story": "Historia editada.",
-        "context": "Contexto editado.",
-        "user_need": "Necesidad editada.",
-        "acceptance_criteria": ["Criterio editado."],
+        "title": "Title edited by the admin",
+        "summary": "Edited summary.",
+        "user_story": "Edited story.",
+        "context": "Edited context.",
+        "user_need": "Edited need.",
+        "acceptance_criteria": ["Edited criterion."],
         "open_questions": [],
         "inferred": {"type": "ui", "severity": "minor"},
     }
@@ -159,16 +159,16 @@ def test_confirm_uses_synthesis_override_when_provided(client, engine) -> None:
     with Session(engine) as s:
         fb = s.get(Feedback, feedback_id)
         assert fb is not None
-        assert fb.title == "Título editado por el admin"
-        assert "Resumen editado." in fb.description
-        assert "Historia editada." in fb.description
-        assert fb.expected_outcome == "Necesidad editada."
+        assert fb.title == "Title edited by the admin"
+        assert "Edited summary." in fb.description
+        assert "Edited story." in fb.description
+        assert fb.expected_outcome == "Edited need."
         assert fb.type == FeedbackType.UI
         assert fb.severity == FeedbackSeverity.MINOR
         # The stored synthesis_json mirrors the override, not the seeded
         # baseline — so admin edits round-trip into the feedback row.
         assert fb.synthesis_json is not None
-        assert fb.synthesis_json["title"] == "Título editado por el admin"
+        assert fb.synthesis_json["title"] == "Title edited by the admin"
 
 
 def test_confirm_404_for_unowned_session(client, engine) -> None:

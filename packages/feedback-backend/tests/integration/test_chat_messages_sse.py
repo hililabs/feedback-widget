@@ -43,7 +43,7 @@ AUTH_ADMIN = {"X-Test-Role": "admin"}
 # ────────────────────────────────────────────────────────────────────
 
 
-def _discover_payload(reply: str = "Cuéntame qué pasó.") -> dict[str, Any]:
+def _discover_payload(reply: str = "Tell me what happened.") -> dict[str, Any]:
     return {
         "mode": "discover",
         "reply": reply,
@@ -66,7 +66,7 @@ def _discover_payload(reply: str = "Cuéntame qué pasó.") -> dict[str, Any]:
 def _synthesize_payload() -> dict[str, Any]:
     return {
         "mode": "synthesize",
-        "reply": "Resumiendo lo que me contaste.",
+        "reply": "Summarizing what you told me.",
         "covered": {
             "problem": 1.0,
             "context": 1.0,
@@ -80,12 +80,12 @@ def _synthesize_payload() -> dict[str, Any]:
         "active_branch": "leaf",
         "inferred": {"type": "bug", "severity": "major"},
         "synthesis": {
-            "title": "Botón guardar no responde",
-            "summary": "El usuario no logra guardar.",
-            "user_story": "Como usuario quiero guardar mi trabajo.",
-            "context": "Pantalla de edición.",
-            "user_need": "Persistir cambios.",
-            "acceptance_criteria": ["El botón guarda el formulario."],
+            "title": "Save button does not respond",
+            "summary": "The user cannot save.",
+            "user_story": "As a user I want to save my work.",
+            "context": "Edit screen.",
+            "user_need": "Persist changes.",
+            "acceptance_criteria": ["The button saves the form."],
             "open_questions": [],
         },
     }
@@ -223,7 +223,7 @@ def test_post_message_streams_delta_and_turn_done(
 
     resp = client.post(
         f"/feedback/chat/sessions/{session_id}/messages",
-        json={"content": "No puedo guardar mi trabajo", "via": "text"},
+        json={"content": "I can't save my work", "via": "text"},
         headers=AUTH_STAFF,
     )
 
@@ -253,7 +253,7 @@ def test_post_message_returns_404_for_other_users_session(
 
     resp = client.post(
         f"/feedback/chat/sessions/{session_id}/messages",
-        json={"content": "hola", "via": "text"},
+        json={"content": "hello", "via": "text"},
         headers=AUTH_ADMIN,
     )
 
@@ -277,7 +277,7 @@ def test_idempotency_key_replays_within_1h(
     headers = {**AUTH_STAFF, "Idempotency-Key": key}
     resp1 = client.post(
         f"/feedback/chat/sessions/{session_id}/messages",
-        json={"content": "primero", "via": "text"},
+        json={"content": "first", "via": "text"},
         headers=headers,
     )
     assert resp1.status_code == 200, resp1.text
@@ -287,7 +287,7 @@ def test_idempotency_key_replays_within_1h(
 
     resp2 = client.post(
         f"/feedback/chat/sessions/{session_id}/messages",
-        json={"content": "segundo (debería ser ignorado)", "via": "text"},
+        json={"content": "second (should be ignored)", "via": "text"},
         headers=headers,
     )
     assert resp2.status_code == 200, resp2.text
@@ -312,7 +312,7 @@ def test_post_message_yields_synthesis_event_when_capture_complete(
 
     resp = client.post(
         f"/feedback/chat/sessions/{session_id}/messages",
-        json={"content": "Ya está", "via": "text"},
+        json={"content": "That's it", "via": "text"},
         headers=AUTH_STAFF,
     )
 
@@ -323,7 +323,7 @@ def test_post_message_yields_synthesis_event_when_capture_complete(
     # The synthesis event must carry the model's structured payload.
     synth = next(d for t, d in events if t == "synthesis")
     assert "data" in synth
-    assert synth["data"]["title"] == "Botón guardar no responde"
+    assert synth["data"]["title"] == "Save button does not respond"
 
     # Session row must reflect awaiting_confirm + synthesis_json persisted.
     with Session(engine) as db:
@@ -331,4 +331,4 @@ def test_post_message_yields_synthesis_event_when_capture_complete(
         assert row is not None
         assert row.status == ChatSessionStatus.AWAITING_CONFIRM
         assert row.synthesis_json is not None
-        assert row.synthesis_json["title"] == "Botón guardar no responde"
+        assert row.synthesis_json["title"] == "Save button does not respond"
