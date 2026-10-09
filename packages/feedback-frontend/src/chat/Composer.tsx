@@ -5,7 +5,7 @@
  * after the ChatGPT / Claude AI composer:
  *
  *   ╭───────────────────────────────────────────────────╮
- *   │  Escribe lo que tienes en mente…       🎙   ➤   │
+ *   │  Type what's on your mind…             🎙   ➤   │
  *   ╰───────────────────────────────────────────────────╯
  *
  * - Rounded full pill wraps the textarea + mic + send buttons.

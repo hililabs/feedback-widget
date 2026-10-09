@@ -11,7 +11,7 @@
  *     and a softened top-right corner, matching the conversational
  *     direction.
  *   - Admin bubbles (S3E TicketDetail thread) get a violet tint + a
- *     "Equipo" badge.
+ *     "Team" badge.
  *
  * Tailwind classes only — no inline styles (codi-react rule).
  */
@@ -22,7 +22,7 @@ import type { ReactElement } from "react";
 export interface ChatBubbleProps {
   role: "user" | "assistant" | "admin";
   text: string;
-  /** Optional caption shown above admin bubbles (e.g. "Equipo · 2026-05-13"). */
+  /** Optional caption shown above admin bubbles (e.g. "Team · 2026-05-13"). */
   caption?: string;
 }
 

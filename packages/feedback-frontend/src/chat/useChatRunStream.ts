@@ -50,13 +50,13 @@ export interface ChatRunStreamResult {
   reset: () => void;
   /** Seed the timeline with the initial assistant greeting. */
   pushAssistantGreeting: (text: string) => void;
-  /** Append a synthetic assistant turn (used by the Ajustar flow to
+  /** Append a synthetic assistant turn (used by the adjust flow to
    * re-inject the bot back into the conversation without a server roundtrip). */
   pushAssistantMessage: (text: string) => void;
   /** Force the state machine into a given state — escape hatch for terminal
    * transitions driven by the parent hook (confirm / adjust). */
   setStateExternal: (next: ChatState) => void;
-  /** Drop the synthesis payload — used after Ajustar so the next synthesize
+  /** Drop the synthesis payload — used after adjusting so the next synthesize
    * turn lands on a clean slot. */
   clearSynthesis: () => void;
   /** Replace the entire timeline + synthesis with a server-provided

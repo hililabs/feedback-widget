@@ -89,7 +89,7 @@ class ChatSessionDetailResponse(BaseModel):
 
     Returned by ``GET /chat/sessions/{sid}`` so the frontend can rebuild
     the timeline when the user clicks an in-progress entry in the
-    "Conversaciones previas" header.
+    "Previous conversations" header.
 
     Ownership is enforced server-side: 404 when the caller's
     ``(tenant_id, user_id)`` does not match the row.
@@ -166,7 +166,7 @@ class ConfirmChatSessionRequest(BaseModel):
 
     ``synthesis_override`` lets the caller submit an edited synthesis
     instead of the one already on ``feedback_chat_session.synthesis_json``
-    (D-012 — Ajustar returns to chat, but the admin/user can also patch
+    (D-012 — adjusting returns to chat, but the admin/user can also patch
     the synthesis here for direct edits). When ``None`` the persisted
     synthesis on the session row is used as-is.
 

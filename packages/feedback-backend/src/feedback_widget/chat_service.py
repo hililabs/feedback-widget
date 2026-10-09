@@ -14,7 +14,7 @@ ships in chat_router; the service yields plain ``dict`` events to keep
 it transport-agnostic and unit-testable.
 
 This service uses the synchronous SQLModel ``Session`` per ADR-006
-(sync engine paralelo en async hosts). DB writes inside ``run_turn``
+(parallel sync engine in async hosts). DB writes inside ``run_turn``
 hop through ``asyncio.to_thread`` so the event loop stays responsive
 between LLM chunks — same discipline as ``iter_service.run_iteration``.
 """

@@ -342,7 +342,7 @@ def build_chat_router(
         """Return full detail of a chat session owned by the caller.
 
         S3C — the frontend uses this to rebuild the timeline when a user
-        clicks an in-progress entry in the "Conversaciones previas"
+        clicks an in-progress entry in the "Previous conversations"
         header. Ownership is enforced server-side: a 404 is returned
         when the session does not exist or belongs to another
         ``(tenant_id, user_id)``.

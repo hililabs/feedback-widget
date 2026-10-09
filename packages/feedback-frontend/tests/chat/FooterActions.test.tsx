@@ -59,8 +59,8 @@ describe("FooterActions — visible states", () => {
     expect(confirm).not.toMatch(/\sdisabled(=|\s|>)/);
     expect(adjust).not.toMatch(/\sdisabled(=|\s|>)/);
     // Labels are present in the rendered text.
-    expect(out).toMatch(/Confirmar/);
-    expect(out).toMatch(/Sigamos iterando/);
+    expect(out).toMatch(/Confirm/);
+    expect(out).toMatch(/Keep iterating/);
   });
 
   it("disables both buttons when state=finalizing", () => {

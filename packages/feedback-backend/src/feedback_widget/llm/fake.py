@@ -154,7 +154,7 @@ def _build_chat_capture_output(digest: str, user_prompt: str) -> dict[str, objec
     if user_turn_count <= 2:
         return {
             "mode": "discover",
-            "reply": "Entiendo. ¿En qué pantalla te pasó esto?",
+            "reply": "Got it. Which screen did this happen on?",
             "covered": {
                 "problem": 0.6,
                 "context": 0.2,
@@ -172,7 +172,7 @@ def _build_chat_capture_output(digest: str, user_prompt: str) -> dict[str, objec
 
     return {
         "mode": "synthesize",
-        "reply": "Perfecto, déjame resumirlo.",
+        "reply": "Perfect, let me summarise it.",
         "covered": {
             "problem": 0.9,
             "context": 0.9,
@@ -187,17 +187,17 @@ def _build_chat_capture_output(digest: str, user_prompt: str) -> dict[str, objec
         "inferred": {"type": "improvement", "severity": "major"},
         "synthesis": {
             "title": f"Demo synthesis {digest[:6]}",
-            "summary": "Resumen canned por el fake provider para demos.",
+            "summary": "Canned summary from the fake provider for demos.",
             "user_story": (
-                "Como usuario del sandbox, quiero ver el flujo chat end-to-end, "
-                "para validar S2 antes de tocar frontend."
+                "As a sandbox user, I want to see the chat flow end-to-end, "
+                "so that I can validate S2 before touching the frontend."
             ),
             "context": "Sandbox demo, fake LLM provider.",
-            "user_need": "Validar el SSE pipeline sin API keys reales.",
+            "user_need": "Validate the SSE pipeline without real API keys.",
             "acceptance_criteria": [
-                "El endpoint POST /messages devuelve eventos SSE válidos",
-                "El parser acepta la respuesta del fake provider",
-                "La synthesis_json se persiste en feedback_chat_session",
+                "The POST /messages endpoint returns valid SSE events",
+                "The parser accepts the fake provider's response",
+                "The synthesis_json is persisted in feedback_chat_session",
             ],
             "open_questions": [],
         },
@@ -251,7 +251,7 @@ class FakeLLMProvider:
 
         # Detect chat-mode (S2 capture prompt) vs iter-mode prompt and
         # produce the shape the matching parser expects.
-        if "ÁRBOL DE DESCUBRIMIENTO" in system_prompt or "grill-me" in system_prompt:
+        if "grill-me" in system_prompt:
             payload = _build_chat_capture_output(digest, user_prompt)
         else:
             version_index = _count_previous_versions(user_prompt) + 1
