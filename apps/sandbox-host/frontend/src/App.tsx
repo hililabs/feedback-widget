@@ -49,7 +49,9 @@ function Sidebar({ role, switchRole }: SidebarProps) {
             : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100",
         ].join(" ")}
       >
-        <span aria-hidden="true" className="text-base">{icon}</span>
+        <span aria-hidden="true" className="text-base">
+          {icon}
+        </span>
         <span className="font-medium">{label}</span>
       </button>
     );
@@ -63,16 +65,12 @@ function Sidebar({ role, switchRole }: SidebarProps) {
         </div>
         <div>
           <p className="text-sm font-semibold leading-tight text-zinc-50">Feedback</p>
-          <p className="text-[10px] uppercase tracking-wider text-zinc-500">
-            Widget sandbox
-          </p>
+          <p className="text-[10px] uppercase tracking-wider text-zinc-500">Widget sandbox</p>
         </div>
       </div>
 
       <nav className="flex flex-col gap-1">
-        <p className="px-3 pb-2 text-[10px] uppercase tracking-wider text-zinc-500">
-          Overview
-        </p>
+        <p className="px-3 pb-2 text-[10px] uppercase tracking-wider text-zinc-500">Overview</p>
         {navItem("Dashboard", "▦", true)}
       </nav>
 
@@ -148,7 +146,10 @@ function MetricCard({
     <div className="group flex flex-col gap-2 rounded-xl border border-zinc-800 bg-zinc-900 p-5 shadow-sm transition-all hover:border-zinc-700 hover:bg-zinc-900/80 hover:shadow-lg">
       <div className="flex items-center justify-between text-xs">
         <span className="text-zinc-400">{label}</span>
-        <span aria-hidden="true" className="text-zinc-600 transition-colors group-hover:text-zinc-400">
+        <span
+          aria-hidden="true"
+          className="text-zinc-600 transition-colors group-hover:text-zinc-400"
+        >
           {icon}
         </span>
       </div>
@@ -171,7 +172,8 @@ function Dashboard() {
           </span>
         </div>
         <p className="max-w-3xl text-sm leading-relaxed text-zinc-400">
-          Demo host that mounts <code className="rounded bg-zinc-800 px-1.5 py-0.5 text-cyan-300">
+          Demo host that mounts{" "}
+          <code className="rounded bg-zinc-800 px-1.5 py-0.5 text-cyan-300">
             @hililabs/feedback-widget
           </code>{" "}
           with header-driven fake auth. Toggle the sandbox role in the sidebar to switch between
@@ -204,7 +206,13 @@ function Dashboard() {
           tone="warning"
           icon="🗂"
         />
-        <MetricCard label="Chat sessions" value="25" hint="80% confirmed" icon="💬" tone="default" />
+        <MetricCard
+          label="Chat sessions"
+          value="25"
+          hint="80% confirmed"
+          icon="💬"
+          tone="default"
+        />
         <MetricCard
           label="Resolved this week"
           value="4"
