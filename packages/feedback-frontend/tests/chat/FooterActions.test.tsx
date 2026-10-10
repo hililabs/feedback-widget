@@ -48,7 +48,7 @@ describe("FooterActions — hidden states", () => {
 });
 
 describe("FooterActions — visible states", () => {
-  it("shows Confirmar + Sigamos iterando enabled when state=confirming", () => {
+  it("shows the confirm + keep-iterating buttons enabled when state=confirming", () => {
     const out = html("confirming");
     const confirm = buttonAttrs(out, "feedback.footer.confirm");
     const adjust = buttonAttrs(out, "feedback.footer.adjust");
@@ -59,8 +59,8 @@ describe("FooterActions — visible states", () => {
     expect(confirm).not.toMatch(/\sdisabled(=|\s|>)/);
     expect(adjust).not.toMatch(/\sdisabled(=|\s|>)/);
     // Labels are present in the rendered text.
-    expect(out).toMatch(/Confirmar/);
-    expect(out).toMatch(/Sigamos iterando/);
+    expect(out).toMatch(/Confirm/);
+    expect(out).toMatch(/Keep iterating/);
   });
 
   it("disables both buttons when state=finalizing", () => {
@@ -73,7 +73,7 @@ describe("FooterActions — visible states", () => {
     expect(adjust).toMatch(/\sdisabled(=|\s|>)/);
   });
 
-  it("shows Reintentar when state=error", () => {
+  it("shows the retry button when state=error", () => {
     const out = html("error");
     // The error-state button has no data-feedback-id, so assert via label.
     expect(out).toMatch(/Reintentar/);

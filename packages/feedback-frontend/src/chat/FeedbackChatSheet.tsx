@@ -10,18 +10,18 @@
  * Layout:
  *
  *   ┌─ SheetHeader (maker mark + title + description) ─────────┐
- *   │ ┌─ FeedbackTabs (Nuevo feedback / Mis feedbacks) ────┐ │
+ *   │ ┌─ FeedbackTabs (Submit feedback / My tickets) ──────┐ │
  *   │ ┌─ CapturePicker (Whole page / Select element) ────-─┐ │  ← compose tab only
  *   │ ┌─ Chat scroll area (timeline + synthesis card) ─-───┐ │
  *   │ ┌─ Composer (textarea + send) ────────────-──────────┐ │  ← discovery states
- *   │ ┌─ FooterActions (Sigamos iterando / Confirmar) ─────┐ │  ← synthesis states
+ *   │ ┌─ FooterActions (Keep iterating / Confirm) ─────────┐ │  ← synthesis states
  *   └────────────────────────────────────────────────────────┘
  *
  * Bottom buttons live in `FooterActions`, NOT inside `SynthesisCard`.
  * Visibility is purely state-driven by `useFeedbackChat.state`.
  *
- * The "Conversaciones previas" header (S3C `<PreviousConversations>`)
- * is replaced by the Mis feedbacks tab + `<MineFeedTab>` (S3F).
+ * The "Previous conversations" header (S3C `<PreviousConversations>`)
+ * is replaced by the My tickets tab + `<MineFeedTab>` (S3F).
  */
 
 import { ArrowLeft } from "lucide-react";
@@ -148,7 +148,7 @@ export function FeedbackChatSheet({
     ensureSession,
   } = chat;
 
-  // S3E — when the user picks a row in Mis feedbacks, the right pane
+  // S3E — when the user picks a row in My tickets, the right pane
   // swaps from the list to <TicketDetail/>. Local to the sheet because
   // the chat hook is scoped to compose-tab lifecycle.
   const [selectedFeedbackId, setSelectedFeedbackId] = useState<string | null>(null);

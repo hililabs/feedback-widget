@@ -18,7 +18,9 @@ Uses the same fixtures as the other chat integration tests:
 from __future__ import annotations
 
 import io
+import json
 import uuid
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -31,6 +33,10 @@ from feedback_widget.chat_whisper import WhisperTranscript
 from sqlmodel import Session
 
 AUTH_STAFF = {"X-Test-Role": "staff"}
+
+_ES = json.loads(
+    (Path(__file__).parent / "data" / "test_chat_voice.es.json").read_text(encoding="utf-8")
+)
 
 # Mirrors the conftest constants — kept here so each test is
 # self-documenting without reaching into private fixture state.
@@ -90,7 +96,7 @@ def test_voice_returns_transcript_with_mocked_whisper(
         captured["language_hint"] = language_hint
         captured["glossary"] = glossary
         return WhisperTranscript(
-            transcript="Hola, el botón guardar no responde.",
+            transcript=_ES["transcript"],
             lang="es",
         )
 
@@ -108,7 +114,7 @@ def test_voice_returns_transcript_with_mocked_whisper(
 
     assert resp.status_code == 200, resp.text
     body = resp.json()
-    assert body["transcript"] == "Hola, el botón guardar no responde."
+    assert body["transcript"] == _ES["transcript"]
     assert body["lang"] == "es"
 
     # The patched helper received the bytes + glossary + hint.

@@ -4,7 +4,7 @@
  * admin downstream) will attach when the chat is confirmed.
  *
  * Reflects the active capture mode:
- *   - mode = "page"        → caption "Página completa"
+ *   - mode = "page"        → caption "Full page"
  *   - mode = "element"     → caption shows the locked element selector
  *     and the thumbnail itself is cropped to that element's bounding
  *     box (the crop happens upstream in ``useFeedbackChat``; this

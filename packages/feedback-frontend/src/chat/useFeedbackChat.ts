@@ -109,7 +109,7 @@ export interface UseFeedbackChatResult {
    * the discover loop with a follow-up question (D-012). */
   adjustSynthesis: () => void;
   /** Rebuild the timeline from a previous conversation the user clicked
-   * in the "Conversaciones previas" header (S3C). For an in-progress
+   * in the "Previous conversations" header (S3C). For an in-progress
    * chat we fetch `GET /chat/sessions/{sid}` and seed messages /
    * synthesis. For a submitted ticket we drop a placeholder bot turn
    * so the user sees context immediately; S3E wires real comments. */
@@ -269,7 +269,7 @@ export function useFeedbackChat(): UseFeedbackChatResult {
   // S3F shell-hybrid — capture-mode + locked element + active tab.
   // Lifted up from the OLD chrome so the new sheet drives both the
   // CAPTURE picker (Whole page / Select element) and the tab strip
-  // (Nuevo feedback / Mis feedbacks) from this hook.
+  // (Submit feedback / My tickets) from this hook.
   const [captureMode, setCaptureMode] = useState<CaptureMode>("page");
   const [lockedElement, setLockedElement] = useState<LockedElementInfo | null>(null);
   const [activeTab, setActiveTab] = useState<FeedbackTab>("compose");
@@ -798,7 +798,7 @@ export function useFeedbackChat(): UseFeedbackChatResult {
   }, [stream, openSheet]);
 
   const adjustSynthesis = useCallback(() => {
-    // D-012: Ajustar never opens an inline form. It re-injects a bot
+    // D-012: adjusting (Keep iterating) never opens an inline form. It re-injects a bot
     // question and hands control back to the composer so the user can
     // describe what they want to change in their own words. The next
     // synthesize turn from the backend will replace the dropped synthesis.

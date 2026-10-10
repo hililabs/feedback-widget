@@ -14,7 +14,7 @@ ships in chat_router; the service yields plain ``dict`` events to keep
 it transport-agnostic and unit-testable.
 
 This service uses the synchronous SQLModel ``Session`` per ADR-006
-(sync engine paralelo en async hosts). DB writes inside ``run_turn``
+(parallel sync engine in async hosts). DB writes inside ``run_turn``
 hop through ``asyncio.to_thread`` so the event loop stays responsive
 between LLM chunks — same discipline as ``iter_service.run_iteration``.
 """
@@ -654,7 +654,7 @@ class ChatService:
         if not isinstance(synthesis, dict) or not synthesis:
             raise ChatSessionMissingSynthesisError(str(chat_session_id))
 
-        # Rate limit (paridad con legacy POST /feedback). The unit
+        # Rate limit (parity with legacy POST /feedback). The unit
         # rate-limited is "feedback row created" — chat sessions that
         # never reach confirm cost nothing. Raise BEFORE any write so
         # the chat session stays AWAITING_CONFIRM and the caller can
@@ -722,7 +722,7 @@ class ChatService:
         # via the CapturePicker, the selector / xpath / bounding-box are
         # already in auto_context. Promote them to the dedicated columns
         # so admin queries that filter on element_selector return chat
-        # rows too — paridad con el endpoint legacy multipart.
+        # rows too — parity with the legacy multipart endpoint.
         element_selector = _opt_str(redacted_auto.get("element_selector"), 1024)
         element_xpath = _opt_str(redacted_auto.get("element_xpath"), 2048)
         bbox_raw = redacted_auto.get("element_bounding_box")

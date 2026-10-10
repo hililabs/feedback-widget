@@ -1,6 +1,6 @@
 """chat-first call audit — feedback_chat_call table.
 
-Sprint C — paridad observability con ``feedback_iter_call``. One row per
+Sprint C — observability parity with ``feedback_iter_call``. One row per
 LLM stream attempted from ``ChatService.run_turn``, capturing model id /
 provider / token counts / latency / status / sha256 of the prompt so the
 admin tooling can replay or correlate behaviour with prompt revisions.

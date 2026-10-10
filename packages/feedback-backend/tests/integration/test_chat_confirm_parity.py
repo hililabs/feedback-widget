@@ -1,4 +1,4 @@
-"""Integration tests for chat-first confirm paridad with legacy POST.
+"""Integration tests for chat-first confirm parity with legacy POST.
 
 Each phase of the Sprint A spec (docs/specs/20260514_1500_SPEC_chat-first-
 parity-with-legacy.md) lands one test here so the parity invariants stay
@@ -81,10 +81,10 @@ def test_confirm_redacts_jwt_bearer_in_synthesis_and_metadata(client, engine) ->
     poisoned_synthesis = {
         "title": f"Auth fails when sending {_BEARER}",
         "summary": f"Server returns 401 with header '{_BEARER}'.",
-        "user_story": f"Como user envío el header con {_JWT}.",
-        "context": "Pantalla login.",
-        "user_need": f"Que la API acepte mi token {_JWT}.",
-        "acceptance_criteria": [f"Llamada GET {_API_KEY_QUERY} responde 200."],
+        "user_story": f"As a user I send the header with {_JWT}.",
+        "context": "Login screen.",
+        "user_need": f"The API should accept my token {_JWT}.",
+        "acceptance_criteria": [f"GET call {_API_KEY_QUERY} returns 200."],
         "open_questions": [],
         "inferred": {"type": "bug", "severity": "major"},
     }
@@ -151,12 +151,12 @@ def test_confirm_persists_element_metadata_to_dedicated_columns(client, engine) 
         engine,
         user_id=_STAFF_USER_ID,
         synthesis_json={
-            "title": "Botón roto",
-            "summary": "El botón no responde.",
-            "user_story": "Como user quiero hacer click.",
-            "context": "Pantalla edit.",
-            "user_need": "Que el botón funcione.",
-            "acceptance_criteria": ["El botón emite onClick."],
+            "title": "Broken button",
+            "summary": "The button does not respond.",
+            "user_story": "As a user I want to click.",
+            "context": "Edit screen.",
+            "user_need": "The button should work.",
+            "acceptance_criteria": ["The button fires onClick."],
             "open_questions": [],
             "inferred": {"type": "bug", "severity": "minor"},
         },
@@ -208,10 +208,10 @@ def test_confirm_enqueues_email_notification(client, engine, settings, monkeypat
         user_id=_STAFF_USER_ID,
         synthesis_json={
             "title": "Email path",
-            "summary": "El user reporta un bug.",
-            "user_story": "Como user quiero la notificación.",
+            "summary": "The user reports a bug.",
+            "user_story": "As a user I want the notification.",
             "context": "n/a",
-            "user_need": "Que el admin reciba el feedback por email.",
+            "user_need": "The admin should get the feedback by email.",
             "acceptance_criteria": [],
             "open_questions": [],
             "inferred": {"type": "bug", "severity": "major"},
@@ -387,7 +387,7 @@ def test_confirm_attaches_screenshot_inline_to_notification_email(
     client, engine, settings, fake_storage, monkeypatch
 ) -> None:
     """Phase 6 — when both screenshot AND notify emails are configured,
-    the SMTP send carries the screenshot bytes inline (paridad legacy)."""
+    the SMTP send carries the screenshot bytes inline (parity with legacy)."""
     import base64
 
     png_bytes = base64.b64decode(
@@ -407,10 +407,10 @@ def test_confirm_attaches_screenshot_inline_to_notification_email(
         user_id=_STAFF_USER_ID,
         synthesis_json={
             "title": "Email + screenshot path",
-            "summary": "Bug visible en captura.",
-            "user_story": "Como user quiero el screenshot en el email.",
+            "summary": "Bug visible in the capture.",
+            "user_story": "As a user I want the screenshot in the email.",
             "context": "n/a",
-            "user_need": "Que el admin vea la imagen.",
+            "user_need": "The admin should see the image.",
             "acceptance_criteria": [],
             "open_questions": [],
             "inferred": {"type": "bug", "severity": "major"},
@@ -462,9 +462,9 @@ def test_confirm_uploads_screenshot_to_storage_and_creates_attachment_row(
         synthesis_json={
             "title": "Screenshot path",
             "summary": "Browser captured a PNG.",
-            "user_story": "Como user veo la página.",
+            "user_story": "As a user I see the page.",
             "context": "n/a",
-            "user_need": "Que el screenshot llegue al admin.",
+            "user_need": "The screenshot should reach the admin.",
             "acceptance_criteria": [],
             "open_questions": [],
             "inferred": {"type": "bug", "severity": "minor"},
@@ -523,9 +523,9 @@ def test_confirm_succeeds_without_screenshot_when_capture_failed(
         synthesis_json={
             "title": "No screenshot path",
             "summary": "Capture failed.",
-            "user_story": "Como user envío sin imagen.",
+            "user_story": "As a user I send without an image.",
             "context": "n/a",
-            "user_need": "Que el confirm no falle por falta de screenshot.",
+            "user_need": "Confirm should not fail for lack of a screenshot.",
             "acceptance_criteria": [],
             "open_questions": [],
             "inferred": {"type": "ui", "severity": "minor"},
@@ -558,11 +558,11 @@ def test_confirm_leaves_element_columns_null_when_no_locked_element(client, engi
         user_id=_STAFF_USER_ID,
         synthesis_json={
             "title": "Whole page feedback",
-            "summary": "Comentario sobre la página.",
-            "user_story": "Como user observo la página.",
-            "context": "Vista general.",
-            "user_need": "Que mejore el flow.",
-            "acceptance_criteria": ["El flow es claro."],
+            "summary": "Comment about the page.",
+            "user_story": "As a user I look at the page.",
+            "context": "Overview.",
+            "user_need": "The flow should improve.",
+            "acceptance_criteria": ["The flow is clear."],
             "open_questions": [],
             "inferred": {"type": "ui", "severity": "minor"},
         },
@@ -603,9 +603,9 @@ def test_confirm_persists_user_agent_from_auto_context(client, engine) -> None:
         synthesis_json={
             "title": "User-agent path",
             "summary": "regression check",
-            "user_story": "Como user uso Chrome.",
+            "user_story": "As a user I use Chrome.",
             "context": "n/a",
-            "user_need": "Que el admin vea mi UA.",
+            "user_need": "The admin should see my UA.",
             "acceptance_criteria": [],
             "open_questions": [],
             "inferred": {"type": "bug", "severity": "minor"},

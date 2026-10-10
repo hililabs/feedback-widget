@@ -1,0 +1,4 @@
+{
+  "_why": "Spanish voice transcript returned by the patched Whisper helper; it pairs with lang=\"es\", so the sample stays Spanish.",
+  "transcript": "Hola, el botón guardar no responde."
+}

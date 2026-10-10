@@ -8,8 +8,8 @@
  *
  * Empty-state hint (post-baseline-audit 2026-05-15): when the timeline
  * is empty (turn 0) we render a soft helper card below the greeting so
- * the user understands the flow before they start typing — "Te haré
- * 1-2 preguntas para entender qué buscas".
+ * the user understands the flow before they start typing — "I'll ask
+ * you 1-2 questions to understand what you need".
  */
 
 import { type ReactElement, useEffect, useMemo, useRef } from "react";

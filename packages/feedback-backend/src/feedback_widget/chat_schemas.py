@@ -89,7 +89,7 @@ class ChatSessionDetailResponse(BaseModel):
 
     Returned by ``GET /chat/sessions/{sid}`` so the frontend can rebuild
     the timeline when the user clicks an in-progress entry in the
-    "Conversaciones previas" header.
+    "Previous conversations" header.
 
     Ownership is enforced server-side: 404 when the caller's
     ``(tenant_id, user_id)`` does not match the row.
@@ -108,7 +108,7 @@ class ChatSessionDetailResponse(BaseModel):
 
 
 class ChatSynthesisPersona(BaseModel):
-    """One persona entry inside an enriched synthesis (Sprint C, paridad
+    """One persona entry inside an enriched synthesis (Sprint C, parity with
     legacy iter Persona). Typed so the frontend SynthesisCard can render
     deterministically and admin tooling can filter / query."""
 
@@ -144,7 +144,7 @@ class ChatSynthesis(BaseModel):
     acceptance_criteria: list[str] = Field(default_factory=list, max_length=20)
     open_questions: list[str] = Field(default_factory=list, max_length=20)
 
-    # ── Optional enrichment (capture_v3 / Sprint B paridad legacy iter) ─
+    # ── Optional enrichment (capture_v3 / Sprint B parity with legacy iter) ─
     personas: list[ChatSynthesisPersona] = Field(default_factory=list, max_length=5)
     user_stories: list[str] = Field(default_factory=list, max_length=10)
     assumptions: list[str] = Field(default_factory=list, max_length=15)
@@ -166,14 +166,14 @@ class ConfirmChatSessionRequest(BaseModel):
 
     ``synthesis_override`` lets the caller submit an edited synthesis
     instead of the one already on ``feedback_chat_session.synthesis_json``
-    (D-012 — Ajustar returns to chat, but the admin/user can also patch
+    (D-012 — adjusting returns to chat, but the admin/user can also patch
     the synthesis here for direct edits). When ``None`` the persisted
     synthesis on the session row is used as-is.
 
     ``screenshot_b64`` carries the auto-captured page screenshot as base64
     PNG so the backend can upload it to the feedback bucket and create
-    the matching :class:`FeedbackAttachment` row — paridad con el endpoint
-    legacy multipart. ``None`` when capture failed client-side; the
+    the matching :class:`FeedbackAttachment` row — parity with the legacy
+    multipart endpoint. ``None`` when capture failed client-side; the
     confirm still succeeds but without the visual evidence.
     """
 

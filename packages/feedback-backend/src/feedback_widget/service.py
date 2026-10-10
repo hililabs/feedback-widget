@@ -272,7 +272,7 @@ class FeedbackService:
         """Tenant-scoped listing for the admin triage view.
 
         Soft-deleted tickets are hidden by default; pass
-        ``include_deleted=True`` to surface them (papelera view).
+        ``include_deleted=True`` to surface them (trash view).
         """
         page = max(page, 1)
         page_size = max(min(page_size, 200), 1)

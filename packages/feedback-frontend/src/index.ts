@@ -1,7 +1,7 @@
 /**
  * Public surface of @hililabs/feedback-widget.
  *
- * Patrón A (2026-05-16): hosts mount EXACTLY one component — the
+ * Pattern A (2026-05-16): hosts mount EXACTLY one component — the
  * floating launcher — and the widget owns its entire UX inside the
  * resizable sheet. Admin triage, ticket browsing, status changes,
  * admin message injection, soft/hard delete and download all happen

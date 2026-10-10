@@ -447,7 +447,7 @@ export function TicketDetail({ feedbackId, onBack }: TicketDetailProps): ReactEl
               timeline). Mirrors FeedbackChatSheet body — composer +
               tray sit FLUSH below this. */}
           <div className="flex flex-col gap-2 px-2 pt-2 pb-2 flex-1 min-h-0 overflow-y-auto">
-          {/* ── Admin actions panel — ARRIBA, justo bajo el header ─ */}
+          {/* ── Admin actions panel — at the TOP, right below the header ─ */}
           {isAdmin ? (
             <details
               className="rounded-md bg-primary/10 p-2"
@@ -586,9 +586,9 @@ export function TicketDetail({ feedbackId, onBack }: TicketDetailProps): ReactEl
                  visually identical to the new-feedback tab. */}
 
           {/* ── Owner reply composer — SAME pill as new-feedback ──
-                 incluyendo paperclip + mic + send con misma morfología
-                 brand. Voice flow propio (useVoiceFlow) porque
-                 TicketDetail vive fuera de useFeedbackChat. */}
+                 including paperclip + mic + send with the same brand
+                 shape. Its own voice flow (useVoiceFlow) because
+                 TicketDetail lives outside useFeedbackChat. */}
           {isOwner && !isTerminal ? (
             voice.state === "recording" || voice.state === "transcribing" ? (
               <VoiceRecorder

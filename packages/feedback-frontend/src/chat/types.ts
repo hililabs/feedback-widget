@@ -128,7 +128,7 @@ export type ChatState =
   | "error";
 
 /**
- * One entry in the collapsible "Conversaciones previas" header (S3C).
+ * One entry in the collapsible "Previous conversations" header (S3C).
  *
  * The list merges two backend sources:
  *
